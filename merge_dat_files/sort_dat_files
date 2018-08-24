@@ -1,0 +1,24 @@
+#!/bin/bash
+
+#--- small script to sort all the CVAO dat files into one file.
+#---clean up directory 
+rm combined.csv 
+rm sorted.csv
+
+#---Use pandas to pull all the csv files together in one file
+python combined.py
+
+#---create a new file with all the data sorted in date order.
+cat combined.csv |sort |uniq > sorted.csv
+
+#---delete the unsorted file
+rm combined.csv
+
+#split into yearly files
+python split_by_year.py
+
+#clean up
+rm sorted.csv
+
+
+
