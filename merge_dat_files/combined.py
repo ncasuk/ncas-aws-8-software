@@ -4,21 +4,26 @@
 
 import os
 import glob
+import sys
 
 # This is the path where you want to search
-path = os.path.abspath('./source')
+inpath = os.path.abspath(sys.argv[1])
 
 open('combined.csv', 'w').close()
-nf = open ("combined.csv" , 'w+')
+with open ("combined.csv" , 'wt+') as nf:
 
-print path
-for file in os.listdir(path):
-    if file.endswith(".dat"):
-        print(os.path.join("./source", file))
-        file = open (os.path.join("./source", file))
-        file_contents = file.readlines()
-        nf.write(''.join(file_contents[4:]))
-        file.close()
+    print(inpath)
+    for infile in os.listdir(inpath):
+        if infile.endswith(".dat"):
+            print(os.path.join(inpath, infile))
+            with open(os.path.join(inpath, infile),'rb') as readfile:
+                #skip four lines
+                for _ in range(4):
+                    next(readfile)
+                #write remainder
+                for line in readfile:
+                    nf.write(str(line))
+            readfile.close()
 
 
 
