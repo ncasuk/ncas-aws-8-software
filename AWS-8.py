@@ -38,7 +38,7 @@ class AWS8 (AMFInstrument):
         aws = pd.DataFrame()
         for infile in infiles:
             with open(infile,'rb') as f:
-                aws = pd.concat([aws, pd.read_csv(f, header=0, encoding='utf-8', skiprows=[0,2,3])])
+                aws = pd.concat([aws, pd.read_csv(f, parse_dates=True, index_col='TIMESTAMP', header=0, encoding='utf-8', skiprows=[0,2,3])])
 
         print(aws)
 
