@@ -12,5 +12,5 @@ crash.log
 #vim swapfiles
 *.swp
 
-#Datafiles
-*.csv
+#temporary Datafiles
+combined.csv
