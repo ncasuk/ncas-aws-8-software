@@ -38,11 +38,43 @@ class AWS8 (AMFInstrument):
         aws = pd.DataFrame()
         for infile in infiles:
             with open(infile,'rb') as f:
-                aws = pd.concat([aws, pd.read_csv(f, parse_dates=True, index_col='TIMESTAMP', header=0, encoding='utf-8', skiprows=[0,2,3])])
+                aws = pd.concat([aws, pd.read_csv(f, parse_dates=True, index_col=0, header=0, encoding='utf-8', skiprows=[0,2,3])])
 
-        print(aws)
+        aws.drop_duplicates(inplace=True)
 
+        #set start and end times
+        self.time_coverage_start = aws.index[0].strftime(self.timeformat)
+        self.time_coverage_end = aws.index[-1].strftime(self.timeformat)
 
+        self.rawdata = aws
+        return aws
+
+    def netcdf(self, output_dir):
+        """
+        Takes a dataframe (self.rawdata) with Campbell AWS data and outputs a 
+        well-formed NetCDF using appropriate conventions.
+
+        :param output_dir: string containing path to output directory
+        """
+        self.setup_dataset('surface-met',1)
+
+        #lat/long
+        self.land_coordinates()
+
+        tempvar = {}
+        #create and populate variable fields
+        for each in ['air_pressure', 'air_temperature', 'relative_humidity','wind_speed', 'wind_from_direction']:
+            tempvar[each] = self.amf_var_to_netcdf_var(each)
+        tempvar['air_pressure'] = self.rawdata.BP_mbar_Avg # mbar==hPa
+        tempvar['air_temperature'] = self.rawdata.AirTC_Avg + 273.15 #convert to K
+        tempvar['relative_humidity'] = self.rawdata.RH 
+        tempvar['wind_speed'][:] = self.rawdata.WS_ms_S_WVT.values
+        tempvar['wind_from_direction'][:] = self.rawdata.WindDir_D1_WVT.values
+    
+        #add all remaining attribs
+        self.dataset.setncatts(self.raw_metadata)
+    
+        self.dataset.close()
 
 if __name__ == '__main__':
     args = AWS8.arguments().parse_args()
