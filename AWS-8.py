@@ -63,13 +63,14 @@ class AWS8 (AMFInstrument):
 
         tempvar = {}
         #create and populate variable fields
-        for each in ['air_pressure', 'air_temperature', 'relative_humidity','wind_speed', 'wind_from_direction']:
+        for each in ['air_pressure', 'air_temperature', 'relative_humidity','wind_speed', 'wind_from_direction','downwelling_shortwave_flux_in_air']:
             tempvar[each] = self.amf_var_to_netcdf_var(each)
         tempvar['air_pressure'] = self.rawdata.BP_mbar_Avg # mbar==hPa
         tempvar['air_temperature'] = self.rawdata.AirTC_Avg + 273.15 #convert to K
         tempvar['relative_humidity'] = self.rawdata.RH 
         tempvar['wind_speed'][:] = self.rawdata.WS_ms_S_WVT.values
         tempvar['wind_from_direction'][:] = self.rawdata.WindDir_D1_WVT.values
+        tempvar['downwelling_shortwave_flux_in_air'][:] = self.rawdata.Slr_W_Avg.values
     
         #add all remaining attribs
         self.dataset.setncatts(self.raw_metadata)
