@@ -38,8 +38,17 @@ class AWS8 (AMFInstrument):
         aws = pd.DataFrame()
         for infile in infiles:
             with open(infile,'rb') as f:
-                aws = pd.concat([aws, pd.read_csv(f, parse_dates=True, index_col=0, header=0, encoding='utf-8', skiprows=[0,2,3])])
+                aws = pd.concat([aws, pd.read_csv(f, 
+                    parse_dates=True, 
+                    index_col=0, 
+                    header=0, 
+                    encoding='utf-8', 
+                    skiprows=[0,2,3],
+                    na_values=['NAN'],
+                    dtype={"TIMESTAMP":str,"RECORD": int,"WS_ms_S_WVT":float,"WindDir_D1_WVT":float,"BP_mbar_Avg":float,"AirTC_Avg":float,"RH":float,"Slr_W_Avg":float,"Slr_kJ_Tot":float}
+                    )])
 
+        aws.sort_index(inplace=True)
         aws.drop_duplicates(inplace=True)
 
         #set start and end times
