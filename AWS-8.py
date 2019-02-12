@@ -98,5 +98,7 @@ if __name__ == '__main__':
     else:
         print ("Successfully create directory %s" % args.outdir)
     aws.get_data(args.infiles)
+    ##Example for slicing by date
+    #aws.rawdata = aws.rawdata['201001010000':'201101010000']
     aws.netcdf(output_dir=args.outdir)
 
